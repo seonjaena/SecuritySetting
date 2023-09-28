@@ -1,27 +1,42 @@
 package com.test.sjna.security;
 
 
+import com.test.sjna.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserAuthenticationProvider userAuthenticationProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .formLogin().disable()
+                .httpBasic().disable();
+
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         http.authorizeRequests()
-                .antMatchers("/view/login").permitAll();
+                .antMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+
+        http.authenticationProvider(userAuthenticationProvider);
 
         /**
          * 특정 URL에서만 CSRF 토큰을 사용하도록 보장한다.
@@ -30,15 +45,8 @@ public class SecurityConfig {
         http.csrf()
                 .requireCsrfProtectionMatcher(getCsrfProtectedMatchers());
 
-        http.formLogin(login -> login
-                        .loginPage("/view/login")
-                        .loginProcessingUrl("/login-process")
-                        .usernameParameter("userid")
-                        .passwordParameter("pw")
-                        .defaultSuccessUrl("/view/dashboard", true)
-                        .permitAll()
-                )
-                .logout(Customizer.withDefaults());
+        http.logout()
+                .logoutUrl("/logout");
 
         return http.build();
     }

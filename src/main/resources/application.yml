@@ -1,0 +1,13 @@
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF
+      suffix: .jsp
+
+
+jwt:
+  secret: 80CtZgeaTA1p8hA2iA0P8ozmL8a41OVcjLaJsNUM5OpdK2Bqp0
+  # MilliSecond 단위로 작성
+  access-expire: 1800000
+  # MilliSecond 단위로 작성
+  refresh-expire: 86400000

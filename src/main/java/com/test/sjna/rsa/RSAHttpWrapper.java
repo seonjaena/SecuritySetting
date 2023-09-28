@@ -1,6 +1,5 @@
 package com.test.sjna.rsa;
 
-import com.test.sjna.filter.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +41,7 @@ public class RSAHttpWrapper extends HttpServletRequestWrapper {
                 for(int i = 0; i < result.length;i++) {
                     if(result[i] ==  null || result[i].isEmpty()) continue;
 
-                    String a = RSADecryptUtil.decryptRsa(privateKey, result[i]);
+                    String a = RSAUtil.decryptRsa(privateKey, result[i]);
                     result[i] = a;
                 }
             }
