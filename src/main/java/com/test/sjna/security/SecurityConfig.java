@@ -56,7 +56,9 @@ public class SecurityConfig {
             public boolean matches(HttpServletRequest request) {
                 // 로그인 시도 URL에서만 CSRF 토큰을 사용한다.
                 for (AntPathRequestMatcher rm : requestMatchers) {
-                    if (rm.matches(request)) { return true; }
+                    if (rm.matches(request)) {
+                        return true;
+                    }
                 }
                 // 로그인 시도 URL이 아니라면 CSRF 토큰을 사용하지 않는다.
                 return false;
