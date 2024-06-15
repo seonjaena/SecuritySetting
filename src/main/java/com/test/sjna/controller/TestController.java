@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class TestController {
 
-    @GetMapping(value = "/view/login")
+    @GetMapping(value = "login")
     public String test(HttpServletRequest request) {
         System.out.println("test 입니다.");
         CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
